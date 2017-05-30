@@ -23,6 +23,10 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Lib;
 
+#if unifill
+import unifill.Unifill;
+#end
+
 #if (js && html5)
 import js.html.DivElement;
 #end
@@ -139,8 +143,22 @@ class TextField extends InteractiveObject {
 			
 			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
 				
-				var x = group.offsetX + __textEngine.getFormattedTextWidth(text.substr(group.startIndex, (charIndex-group.startIndex)), group.format);
-				var width = __textEngine.getFormattedTextWidth(text.charAt(charIndex), group.format);
+				var substr = "";
+				#if unifill
+				substr = Unifill.uSubstr(text, group.startIndex, (charIndex - group.startIndex));
+				#else
+				substr = text.substr(group.startIndex, (charIndex - group.startIndex));
+				#end
+				
+				var charAt = "";
+				#if unifill
+				charAt = Unifill.uCharAt(text, charIndex);
+				#else
+				charAt = text.charAt(charIndex);
+				#end
+				
+				var x = group.offsetX + __textEngine.getFormattedTextWidth(substr, group.format);
+				var width = __textEngine.getFormattedTextWidth(charAt, group.format);
 				
 				return new Rectangle (x, group.offsetY, width, group.ascent + group.descent);
 				
